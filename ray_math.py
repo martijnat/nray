@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-
-def sqrt(x, error=(2**-100)):
+def sqrt(x, error=(2**-10)):
     r = 0
     step = x
     while abs(r * r - x) > error:
@@ -58,13 +57,13 @@ class vec3():
         return self.dot(self)
 
 
-class ray():
+class Ray():
     def __init__(self, o, d):
         self.o = o
         self.d = d.normalized()
 
 
-class sphere():
+class Sphere():
     "x²+y²+z² = r"
 
     def __init__(self, x, y, z, r, color):
@@ -74,20 +73,26 @@ class sphere():
         self.r = r
         self.color = color
 
+    def trace(self,origin,direction,world,lights,raytrace,raydepth):
+        for R in range(1000):
+            r= 0.01*R
+            if abs(origin+(direction)*r-vec3(self.x,self.y,self.z))<=self.r:
+                return self.color,r
+        return bg_color,pos_infinity
 
-class light():
+
+class Light():
     def __init__(self, pos, color):
         self.pos = pos
         self.color = color
 
 
-if __name__ == "__main__":
-    v1 = vec3(1, 0, 0)
-    v2 = vec3(1, 2, 3)
-    s = 3
-    v3 = v2 * s
+def vec2rgb(c):
+    r = min(255,max(0,int(c.x*256)))
+    g = min(255,max(0,int(c.y*256)))
+    b = min(255,max(0,int(c.z*256)))
+    return r,g,b
 
-    assert abs(v1) == 1.0
-    assert abs(v2.normalized()) == 1.0
-    assert abs(v1 + v2) == abs(v2 + v1)
-    assert s * s * abs(v2) == abs(v3)
+pos_infinity = float('+inf')
+neg_infinity = float('-inf')
+bg_color = vec3(0.1,0.1,0.1)
