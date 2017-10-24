@@ -1,4 +1,6 @@
 all: build
 
 build:
-	echo "placeholder command"
+	python3 main.py > output.ppm
+	convert output.ppm output.png
+	feh output.png
