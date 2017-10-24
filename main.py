@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from ray_math import vec3
+
 output_width=640
 output_height=480
 
