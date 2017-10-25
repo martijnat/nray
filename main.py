@@ -1,16 +1,19 @@
-#!/usr/bin/env python3
+#!/usr/bin/env pypy3
 from ray_math import *
 
-output_width=160
-output_height=120
+output_width=320
+output_height=240
 
 cameraX = vec3(1,0,0)
 cameraY = vec3(0,1,0)
 cameraZ = vec3(0,0,1)
 cameraO = vec3(0,0,-1)
 
-world = [Sphere(0,0,0,0.1,vec3(.2,.4,.8))]
-lights = [Light(vec3(3,10,0),vec3(0.8,0.4,0.2))]
+world = [Sphere(0,0,0,0.3,red),
+         Sphere(-.3,-.3,-.2,0.2,green),
+         Sphere(0,-999.5,0,999,blue)
+]
+lights = [Light(vec3(3,10,-1),light_color)]
 
 def raytrace(world,lights,origin,direction,raydepth=0):
     if raydepth>8:
@@ -32,7 +35,7 @@ for y in range(output_height):
     y_ratio = y/float(output_height)
     for x in range(output_width):
         x_ratio = x/float(output_width)
-        p = cameraX*(2*x_ratio-1.0)*screen_ratio + cameraY*(2*y_ratio-1.0) + cameraZ*1
+        p = cameraX*(2*x_ratio-1.0)*screen_ratio - cameraY*(2*y_ratio-1.0) + cameraZ*1
         d = (p-cameraO).normalized()
         r,g,b = raytrace(world,lights,cameraO,d)
         print(r,g,b)
