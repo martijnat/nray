@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
+from sys import stderr
 
-def sqrt(x, error=(2**-10)):
-    r = 0
-    step = x
-    while abs(r * r - x) > error:
-        if abs((r + step) * (r + step) - x) < abs(r * r - x):
-            r += step
-        elif abs((r - step) * (r - step) - x) < abs(r * r - x):
-            r -= step
-        else:
-            step = step * 0.5
-    return r
+error=(2**-100)
+
+# def sqrt(x):
+#     r = 0
+#     step = x
+#     while abs(r * r - x) > error:
+#         if abs((r + step) * (r + step) - x) < abs(r * r - x):
+#             r += step
+#         elif abs((r - step) * (r - step) - x) < abs(r * r - x):
+#             r -= step
+#         else:
+#             step = step * 0.5
+#     return r
+from math import sqrt
 
 
 class vec3():
@@ -47,7 +51,7 @@ class vec3():
 
     def normalized(self):
         s = abs(self)
-        if s <= 0:
+        if s <= error:
             return vec3()
         return vec3(self.x / sqrt(s),
                     self.y / sqrt(s),
@@ -91,20 +95,66 @@ class Sphere():
     def intersect(self,p):
         return abs(p-self.center)<=(self.r)**2
 
+    def intersection(self,origin,direction):
+        # p = o +d·t
+        # px² +py² + pz²- r² = 0
+        o = origin-self.center
+        d = direction
+        # t²*d.dot(d) + t * 2* o.dot(d) + o.dot(O) - r² = 0
+
+        # # quadratic equation
+        # x  = (-b ± √(b²-4ac)) / 2a
+
+        # a = d²
+        # b = 2od
+        # c = o² - r²
+
+        a = d.dot(d)            # always 1.0
+        b = 2.0 * o.dot(d)
+        c = o.dot(o) - (self.r*self.r)
+
+
+        S = (b*b)-(4*a*c)
+        if S<=error:
+            return pos_infinity
+
+        t1 = (-b-sqrt(S))/(2.0*a)
+        t2 = (-b+sqrt(S))/(2.0*a)
+
+        t = -1
+        if t1<=0 and t2>0:
+            return t2
+        elif t2<=0 and t1>0:
+            return t1
+        elif t1<=0 and t2<=0:
+            return pos_infinity
+        else:
+            return min(t1,t2)
+
     def trace(self,origin,direction,world,lights,raytrace,raydepth):
-        for R in range(1000):
-            r= 0.01*R
-            if self.intersect(origin+(direction)*r):
-                p = origin+direction*r
-                color = color_mult(self.color,ambient_color)
-                for light in lights:
-                    sphere_normal = (p - self.center).normalized()
-                    light_angle = sphere_normal.dot((light.pos-p).normalized())
-                    if light_angle>0:
-                        if light.free_path(p,world):
-                            color = color + (color_mult(self.color,light.color)*light_angle)
-                return color,r
-        return bg_color,pos_infinity
+        t = self.intersection(origin,direction)
+        if t==pos_infinity:
+            return blue,pos_infinity
+        elif t<=0:
+            return green,pos_infinity
+
+        return self.color,t
+
+        # for R in range(1000):
+        #     r= 0.01*R
+        #     if self.intersect(origin+(direction)*r):
+        #         p = origin+direction*r
+        #         # stderr.write("%s\n"%(t*r))
+        #         # quit(1)
+        #         color = color_mult(self.color,ambient_color)
+        #         for light in lights:
+        #             sphere_normal = (p - self.center).normalized()
+        #             light_angle = sphere_normal.dot((light.pos-p).normalized())
+        #             if light_angle>0:
+        #                 if light.free_path(p,world):
+        #                     color = color + (color_mult(self.color,light.color)*light_angle)
+        #         return color,r
+        # return bg_color,pos_infinity
 
 
 class Light():

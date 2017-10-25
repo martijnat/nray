@@ -1,17 +1,18 @@
 #!/usr/bin/env pypy3
 from ray_math import *
 
-output_width=320
-output_height=240
+# output_width,output_height=160,120
+output_width,output_height=640,480
 
 cameraX = vec3(1,0,0)
 cameraY = vec3(0,1,0)
 cameraZ = vec3(0,0,1)
-cameraO = vec3(0,0,-1)
+cameraO = vec3(0,0,-10)
 
-world = [Sphere(0,0,0,0.3,red),
-         Sphere(-.3,-.3,-.2,0.2,green),
-         Sphere(0,-999.5,0,999,blue)
+world = [
+    Sphere(0,0,0,0.7,red),
+    Sphere(-.3,-.3,-.6,0.2,green),
+    Sphere(0,-999.5,0,999,blue)
 ]
 lights = [Light(vec3(3,10,-1),light_color)]
 
@@ -22,7 +23,7 @@ def raytrace(world,lights,origin,direction,raydepth=0):
     current_dist = pos_infinity
     for obj in world:
         test_color,test_dist = obj.trace(origin,direction,world,lights,raytrace,raydepth)
-        if test_dist<current_dist:
+        if (test_dist > 0) and (test_dist<current_dist):
             current_dist = test_dist
             current_color = test_color
 
