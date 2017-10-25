@@ -1,23 +1,32 @@
 #!/usr/bin/env pypy3
 from ray_math import *
+from sys import stderr
 
+# output_width,output_height=64,64
 # output_width,output_height=160,120
 # output_width,output_height=320,240
 # output_width,output_height=640,480
-output_width, output_height = 1024, 768
+# output_width, output_height = 1024, 768
+
+output_width, output_height = 1920, 1080
+
+# output_width, output_height = 480, 800
 
 cameraX = vec3(1, 0, 0)
 cameraY = vec3(0, 1, 0)
 cameraZ = vec3(0, 0, 1)
-cameraO = vec3(0, 0, -10)
+cameraO = vec3(0, 0, -2)
 
 world  = [
-    Sphere( 0.0,  0.0,  0.0, 0.5, red, 0.1, 0.1),
-    Sphere( 0.5,  0.3, -0.5, 0.4, green, 0.5, 0.3),
-    Sphere(-0.5, -0.3, -0.3, 0.4, blue,  0.5, 0.0),
-    Sphere( 0.0, -999.5, 0, 999, gray)
+    Sphere(-0.3,  -0.3,  0.1,   0.2, black,0.7,0.0),
+    Sphere( 0.3,  -0.3,  0.1,   0.2, white,0.5,0.5),
+   
+    Sphere( 0.0, -999.5, 0.0, 999, gray, 0.7,0.5),
+    Sphere( 0.0, 0, 1, 0.5, green),
+    Sphere(-1.0, 0, 0, 0.5, red),
+    Sphere( 1.0, 0, 0, 0.5, blue),
 ]
-lights = [Light(vec3(3, 10, -3), light_color)]
+lights = [Light(vec3(7, 10, -3), light_color)]
 
 
 def raytrace(world, lights, origin, direction, raydepth=0):
@@ -39,10 +48,11 @@ def raytrace(world, lights, origin, direction, raydepth=0):
 print("P3", output_width, output_height, 255)
 screen_ratio = output_width / output_height
 
-sample_x = 4
-sample_y = 4
+sample_x = 8
+sample_y = sample_x
 
 for y in range(output_height):
+    stderr.write("%i/%i\r"%(y,output_height))
     y_ratio = y / float(output_height)
     for x in range(output_width):
         x_ratio = x / float(output_width)

@@ -77,6 +77,8 @@ red           = vec3(1,0,0)
 green         = vec3(0,1,0)
 blue          = vec3(0,0,1)
 gray          = vec3(0.5,0.5,0.5)
+white         = vec3(1,1,1)
+black         = vec3(0,0,0)
 
 def color_mult(c1,c2):
     return vec3(c1.x*c2.x,
@@ -92,7 +94,7 @@ class Ray():
 class Sphere():
     "x²+y²+z² = r²"
 
-    def __init__(self, x, y, z, r, color, reflectivity=0.5, roughness=0.1):
+    def __init__(self, x, y, z, r, color, reflectivity=0.3, roughness=0.1):
         self.x = x
         self.y = y
         self.z = z
@@ -160,7 +162,7 @@ class Sphere():
         refrected_direction = direction - sphere_normal*(direction.dot(sphere_normal)*2)
         random_direction = (refrected_direction + random_vector()).normalized()
         
-        new_direction = random_direction*self.roughness + refrected_direction*(1-self.roughness)
+        new_direction = (random_direction*self.roughness + refrected_direction*(1-self.roughness)).normalized()
         
         color = (color*(1-self.reflectivity)
                  + raytrace(world,
@@ -188,8 +190,13 @@ class Light():
         return True
 
 
+def srgb(l):
+    if l<=0.00313066844250063:
+        return min(255,max(0,int(l*12.92*256)))
+    return min(255,max(0,int(256*1.055*(l**(1/2.4))-0.055)))
+    
 def vec2rgb(c):
-    r = min(255,max(0,int(c.x*256)))
-    g = min(255,max(0,int(c.y*256)))
-    b = min(255,max(0,int(c.z*256)))
+    r = srgb(c.x)
+    g = srgb(c.y)
+    b = srgb(c.z)
     return r,g,b
