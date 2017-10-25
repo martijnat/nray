@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from sys import stderr
+from random import random
 
 error=(2**-32)
 
@@ -14,6 +15,7 @@ error=(2**-32)
 #         else:
 #             step = step * 0.5
 #     return r
+
 from math import sqrt
 
 
@@ -60,15 +62,21 @@ class vec3():
     def __abs__(self):
         return self.dot(self)
 
+def random_vector():
+    return vec3(-1.0+2*random(),
+                -1.0+2*random(),
+                -1.0+2*random())
+
 
 pos_infinity  = float('+inf')
 neg_infinity  = float('-inf')
-bg_color      = vec3(0.1,0.1,0.1)
-ambient_color = vec3(0.25,0.5,0.75)
-light_color   = vec3(0.75,0.5,0.25)
+ambient_color = vec3(1,2,3).normalized()
+bg_color      = ambient_color
+light_color   = vec3(2,2,1).normalized()
 red           = vec3(1,0,0)
 green         = vec3(0,1,0)
 blue          = vec3(0,0,1)
+gray          = vec3(0.5,0.5,0.5)
 
 def color_mult(c1,c2):
     return vec3(c1.x*c2.x,
@@ -84,13 +92,15 @@ class Ray():
 class Sphere():
     "x²+y²+z² = r²"
 
-    def __init__(self, x, y, z, r, color):
+    def __init__(self, x, y, z, r, color, reflectivity=0.5, roughness=0.1):
         self.x = x
         self.y = y
         self.z = z
         self.r = r
         self.center = vec3(x,y,z)
         self.color = color
+        self.reflectivity = reflectivity        
+        self.roughness = roughness
 
     def intersection(self,origin,direction):
         # p = o +d·t
@@ -138,13 +148,26 @@ class Sphere():
 
         p = origin+direction*t
         color = color_mult(self.color,ambient_color)
+        sphere_normal = (p - self.center).normalized()
         
         for light in lights:
-            sphere_normal = (p - self.center).normalized()
             light_angle = sphere_normal.dot((light.pos-p).normalized())
             if light_angle>0:
                 if light.free_path(p,world):
                     color = color + (color_mult(self.color,light.color)*light_angle)
+
+
+        refrected_direction = direction - sphere_normal*(direction.dot(sphere_normal)*2)
+        random_direction = (refrected_direction + random_vector()).normalized()
+        
+        new_direction = random_direction*self.roughness + refrected_direction*(1-self.roughness)
+        
+        color = (color*(1-self.reflectivity)
+                 + raytrace(world,
+                            lights,
+                            origin+direction*(t-error),
+                            new_direction,
+                            raydepth+1)*self.reflectivity)
        
         return color,t
 
