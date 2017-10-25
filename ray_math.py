@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from sys import stderr
 
-error=(2**-100)
+error=(2**-32)
 
 # def sqrt(x):
 #     r = 0
@@ -92,9 +92,6 @@ class Sphere():
         self.center = vec3(x,y,z)
         self.color = color
 
-    def intersect(self,p):
-        return abs(p-self.center)<=(self.r)**2
-
     def intersection(self,origin,direction):
         # p = o +d·t
         # px² +py² + pz²- r² = 0
@@ -134,27 +131,22 @@ class Sphere():
     def trace(self,origin,direction,world,lights,raytrace,raydepth):
         t = self.intersection(origin,direction)
         if t==pos_infinity:
-            return blue,pos_infinity
+            return bg_color,pos_infinity
         elif t<=0:
-            return green,pos_infinity
+            return bg_color,pos_infinity
 
-        return self.color,t
 
-        # for R in range(1000):
-        #     r= 0.01*R
-        #     if self.intersect(origin+(direction)*r):
-        #         p = origin+direction*r
-        #         # stderr.write("%s\n"%(t*r))
-        #         # quit(1)
-        #         color = color_mult(self.color,ambient_color)
-        #         for light in lights:
-        #             sphere_normal = (p - self.center).normalized()
-        #             light_angle = sphere_normal.dot((light.pos-p).normalized())
-        #             if light_angle>0:
-        #                 if light.free_path(p,world):
-        #                     color = color + (color_mult(self.color,light.color)*light_angle)
-        #         return color,r
-        # return bg_color,pos_infinity
+        p = origin+direction*t
+        color = color_mult(self.color,ambient_color)
+        
+        for light in lights:
+            sphere_normal = (p - self.center).normalized()
+            light_angle = sphere_normal.dot((light.pos-p).normalized())
+            if light_angle>0:
+                if light.free_path(p,world):
+                    color = color + (color_mult(self.color,light.color)*light_angle)
+       
+        return color,t
 
 
 class Light():
@@ -162,13 +154,14 @@ class Light():
         self.pos = pos
         self.color = color
     def free_path(self,pos,world):
-        d = (pos-self.pos)
-        for R in range(1,1000):
-            r = (R*0.001)
-            p = pos*(1-r)+self.pos*r
-            for o in world:
-                if o.intersect(p):
-                    return False
+        mt = (self.pos-pos).dot(self.pos-pos)
+        d = (pos-self.pos).normalized()
+        o = self.pos
+        
+        for thing in world:
+            t = thing.intersection(o,d)
+            if t*t<mt-error and t*t>error:
+                return False
         return True
 
 

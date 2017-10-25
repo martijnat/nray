@@ -10,11 +10,11 @@ cameraZ = vec3(0,0,1)
 cameraO = vec3(0,0,-10)
 
 world = [
-    Sphere(0,0,0,0.7,red),
-    Sphere(-.3,-.3,-.6,0.2,green),
-    Sphere(0,-999.5,0,999,blue)
+    Sphere(0,0,0,0.5,red),
+    Sphere(.5,.3,-.5,0.4,green),
+    Sphere(0,-99999.5,0,99999,blue)
 ]
-lights = [Light(vec3(3,10,-1),light_color)]
+lights = [Light(vec3(3,10,-3),light_color)]
 
 def raytrace(world,lights,origin,direction,raydepth=0):
     if raydepth>8:
