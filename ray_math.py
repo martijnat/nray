@@ -18,22 +18,7 @@
 from sys import stderr
 from random import random
 
-error=(2**-32)
-
-# def sqrt(x):
-#     r = 0
-#     step = x
-#     while abs(r * r - x) > error:
-#         if abs((r + step) * (r + step) - x) < abs(r * r - x):
-#             r += step
-#         elif abs((r - step) * (r - step) - x) < abs(r * r - x):
-#             r -= step
-#         else:
-#             step = step * 0.5
-#     return r
-
-from math import sqrt
-
+error=(2**-8)
 
 class vec3():
     def __init__(self, x=0.0, y=0.0, z=0.0):
@@ -71,9 +56,10 @@ class vec3():
         s = abs(self)
         if s <= error:
             return vec3()
-        return vec3(self.x / sqrt(s),
-                    self.y / sqrt(s),
-                    self.z / sqrt(s))
+        d = s**0.5
+        return vec3(self.x / d,
+                    self.y / d,
+                    self.z / d)
 
     def __abs__(self):
         return self.dot(self)
@@ -147,8 +133,9 @@ class Sphere():
         if S<=error:
             return pos_infinity
 
-        t1 = (-b-sqrt(S))/(2.0*a)
-        t2 = (-b+sqrt(S))/(2.0*a)
+        sqrtS = S**0.5
+        t1 = (-b-sqrtS)/(2.0*a)
+        t2 = (-b+sqrtS)/(2.0*a)
 
         t = -1
         if t1<=0 and t2>0:
