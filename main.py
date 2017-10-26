@@ -7,10 +7,8 @@ from sys import stderr
 # output_width,output_height=320,240
 # output_width,output_height=640,480
 # output_width, output_height = 1024, 768
-
-output_width, output_height = 1920, 1080
-
-# output_width, output_height = 480, 800
+# output_width, output_height = 1920, 1080
+output_width, output_height = 3840, 2160
 
 cameraX = vec3(1, 0, 0)
 cameraY = vec3(0, 1, 0)
@@ -22,9 +20,19 @@ world  = [
     Sphere( 0.3,  -0.3,  0.1,   0.2, white,0.5,0.5),
    
     Sphere( 0.0, -999.5, 0.0, 999, gray, 0.7,0.5),
-    Sphere( 0.0, 0, 1, 0.5, green),
-    Sphere(-1.0, 0, 0, 0.5, red),
-    Sphere( 1.0, 0, 0, 0.5, blue),
+    Sphere( 0.0, 0, 1.0, 0.5, green),
+    Sphere(-1.0, 0, 0.5, 0.5, red),
+    Sphere( 1.0, 0, 0.5, 0.5, blue),
+
+
+    Sphere(-0.5, -0.4, -0.3, 0.1, purple),
+    Sphere(-0.3, -0.4, -0.3, 0.1, blue),
+    Sphere(-0.1, -0.4, -0.3, 0.1, cyan),
+    
+    Sphere( 0.1, -0.4, -0.3, 0.1, green),
+    Sphere( 0.3, -0.4, -0.3, 0.1, yellow),
+    Sphere( 0.5, -0.4, -0.3, 0.1, red),
+
 ]
 lights = [Light(vec3(7, 10, -3), light_color)]
 

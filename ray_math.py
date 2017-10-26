@@ -73,9 +73,13 @@ neg_infinity  = float('-inf')
 ambient_color = vec3(1,2,3).normalized()
 bg_color      = ambient_color
 light_color   = vec3(2,2,1).normalized()
+purple        = vec3(1,0,1)
 red           = vec3(1,0,0)
+yellow        = vec3(1,1,0)
 green         = vec3(0,1,0)
+cyan          = vec3(0,1,1)
 blue          = vec3(0,0,1)
+
 gray          = vec3(0.5,0.5,0.5)
 white         = vec3(1,1,1)
 black         = vec3(0,0,0)
