@@ -19,7 +19,7 @@
 from ray_math import *
 from sys import stderr
 
-output_width, output_height = 1920*8, 1080*8
+output_width, output_height = 1920//8, 1080//8
 
 cameraX = vec3(1, 0, 0)
 cameraY = vec3(0, 1, 0)
@@ -27,25 +27,24 @@ cameraZ = vec3(0, 0, 1)
 cameraO = vec3(0, 0, -2)
 
 world  = [
-    Sphere(-0.3,  -0.3,  0.1,   0.2, black,0.7,0.0),
-    Sphere( 0.3,  -0.3,  0.1,   0.2, white,0.5,0.5),
+    Sphere(-0.3,  -0.3,  0.1,   0.2, black,0.7,0.0,),
+    Sphere( 0.3,  -0.3,  0.1,   0.2, white,0.7,0.5,),
    
-    Sphere( 0.0, -999.5, 0.0, 999, gray, 0.7,0.5),
+    Sphere( 0.0, -999.5, 0.0, 999, gray,0.7,0.0),
     Sphere( 0.0, 0, 1.0, 0.5, green),
     Sphere(-1.0, 0, 0.5, 0.5, red),
     Sphere( 1.0, 0, 0.5, 0.5, blue),
 
 
-    Sphere(-0.5, -0.4, -0.3, 0.1, purple),
-    Sphere(-0.3, -0.4, -0.3, 0.1, blue),
-    Sphere(-0.1, -0.4, -0.3, 0.1, cyan),
-    
-    Sphere( 0.1, -0.4, -0.3, 0.1, green),
-    Sphere( 0.3, -0.4, -0.3, 0.1, yellow),
-    Sphere( 0.5, -0.4, -0.3, 0.1, red),
+    Sphere(-0.5, -0.45, -0.3, 0.1, purple, 0.5,0.1, 0.1),
+    Sphere(-0.3, -0.45, -0.3, 0.1, blue,   0.5,0.1, 0.1),
+    Sphere(-0.1, -0.45, -0.3, 0.1, cyan,   0.5,0.1, 0.1),    
+    Sphere( 0.1, -0.45, -0.3, 0.1, green,  0.5,0.1, 0.1),
+    Sphere( 0.3, -0.45, -0.3, 0.1, yellow, 0.5,0.1, 0.1),
+    Sphere( 0.5, -0.45, -0.3, 0.1, red,    0.5,0.1, 0.1),    
 
 ]
-lights = [Light(vec3(7, 10, -3), light_color)]
+lights = [Light(vec3(0.7, 1, -0.5), light_color)]
 
 
 def raytrace(world, lights, origin, direction, raydepth=0):
