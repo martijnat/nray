@@ -161,7 +161,7 @@ class Ray():
 class Sphere():
     "x²+y²+z² = r²"
 
-    def __init__(self, x, y, z, r, color, reflectivity=0.3, roughness=0.1,refraction=1):
+    def __init__(self, x, y, z, r, color, reflectivity=0.3, roughness=0.0,refraction=1):
         self.x = x
         self.y = y
         self.z = z
@@ -243,6 +243,18 @@ class Sphere():
                             raydepth+1)*self.reflectivity)
        
         return color,t
+
+class CheckeredSphere(Sphere):
+    def material(self,p):
+        scale=0.3
+        oddx = (p.x%scale)>0.5*scale
+        oddy = (p.y%scale)>0.5*scale
+        oddz = (p.z%scale)>0.5*scale
+        odd = oddx^oddy^oddz
+        if odd:
+            return self.color
+        else:
+            return vec3(1,1,1)-self.color
     
 class Light():
     def __init__(self, pos, color):
