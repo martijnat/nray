@@ -19,13 +19,7 @@
 from ray_math import *
 from sys import stderr
 
-# output_width,output_height=64,64
-# output_width,output_height=160,120
-# output_width,output_height=320,240
-# output_width,output_height=640,480
-# output_width, output_height = 1024, 768
-# output_width, output_height = 1920, 1080
-output_width, output_height = 3840, 2160
+output_width, output_height = 1920*4, 1080*4
 
 cameraX = vec3(1, 0, 0)
 cameraY = vec3(0, 1, 0)
@@ -72,25 +66,14 @@ def raytrace(world, lights, origin, direction, raydepth=0):
 # write final image
 print("P3", output_width, output_height, 255)
 screen_ratio = output_width / output_height
-
-sample_x = 8
-sample_y = sample_x
-
 for y in range(output_height):
     stderr.write("%i/%i\r"%(y,output_height))
     y_ratio = y / float(output_height)
     for x in range(output_width):
         x_ratio = x / float(output_width)
-        color = vec3()
-        for sy in range(sample_y):
-            for sx in range(sample_x):
-                cx = x_ratio + sx/(output_width*sample_x)
-                cy = y_ratio + sy/(output_height*sample_y)
-                p = cameraX * (2 * cx - 1.0) * screen_ratio - \
-                    cameraY * (2 * cy - 1.0) + cameraZ * 1
-                d = (p - cameraO).normalized()
-                color = color + raytrace(world, lights, cameraO, d)
-            
-        color = color * (1.0/(sample_x*sample_y))
-        r, g, b = vec2rgb(color)
+        p = cameraX * (2 * x_ratio - 1.0) * screen_ratio - \
+            cameraY * (2 * y_ratio - 1.0) + cameraZ * 1
+        d = (p - cameraO).normalized()
+        
+        r, g, b = vec2rgb(raytrace(world, lights, cameraO, d))
         print(r, g, b)
