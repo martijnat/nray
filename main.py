@@ -21,11 +21,11 @@ from sys import stderr
 
 # output_width,output_height=64,64
 # output_width,output_height=160,120
-output_width,output_height=320,240
+# output_width,output_height=320,240
 # output_width,output_height=640,480
 # output_width, output_height = 1024, 768
 # output_width, output_height = 1920, 1080
-# output_width, output_height = 3840, 2160
+output_width, output_height = 3840, 2160
 
 cameraX = vec3(1, 0, 0)
 cameraY = vec3(0, 1, 0)
@@ -73,7 +73,7 @@ def raytrace(world, lights, origin, direction, raydepth=0):
 print("P3", output_width, output_height, 255)
 screen_ratio = output_width / output_height
 
-sample_x = 1
+sample_x = 8
 sample_y = sample_x
 
 for y in range(output_height):
