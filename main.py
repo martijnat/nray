@@ -19,7 +19,7 @@
 from ray_math import *
 from sys import stderr
 
-output_width, output_height = 1920*4, 1080*4
+output_width, output_height = 1920*8, 1080*8
 
 cameraX = vec3(1, 0, 0)
 cameraY = vec3(0, 1, 0)
