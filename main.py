@@ -15,11 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 from ray_math import *
 from sys import stderr
 
-output_width, output_height = 1920*8, 1080*8
+upscale = 20
+output_width, output_height = int(1920*(upscale**0.5)), int(1080*(upscale**0.5))
 
 cameraX = vec3(1, 0, 0)
 cameraY = vec3(0, 1, 0)
@@ -27,28 +27,44 @@ cameraZ = vec3(0, 0, 1)
 cameraO = vec3(0, 0, -2)
 
 world  = [
-    Sphere(-0.3,  -0.3,  0.1,   0.2, black,0.7,0.0,),
-    Sphere( 0.3,  -0.3,  0.1,   0.2, white,0.7,0.5,),
+    Sphere(-0.3,  -0.3,  0.1,   0.2, black,0.5,0.0,),
+    Sphere( 0.3,  -0.3,  0.1,   0.2, white,0.5,0.3,),
     
     CheckeredSphere( 0.0, -999.5, 0.0, 999, white,0.7,0.1),
     
-    Sphere( 0.0, 0, 1.0, 0.5, green),
     Sphere(-1.0, 0, 0.5, 0.5, red),
+    Sphere( 0.0, 0, 1.0, 0.5, green),
     Sphere( 1.0, 0, 0.5, 0.5, blue),
 
-    Sphere(-0.5, -0.45, -0.3, 0.1, purple, 0.5,0.1,),
-    Sphere(-0.3, -0.45, -0.2, 0.1, blue,   0.5,0.1,),
-    Sphere(-0.1, -0.45, -0.1, 0.1, cyan,   0.5,0.1,),        
-    Sphere( 0.1, -0.45, -0.1, 0.1, green,  0.5,0.1,),
-    Sphere( 0.3, -0.45, -0.2, 0.1, yellow, 0.5,0.1,),
-    Sphere( 0.5, -0.45, -0.3, 0.1, red,    0.5,0.1,),    
+    Sphere(-0.5, -0.45, -0.3, 0.1, purple, 0.3,0.1,),
+    Sphere(-0.3, -0.45, -0.2, 0.1, blue,   0.3,0.1,),
+    Sphere(-0.1, -0.45, -0.1, 0.1, cyan,   0.3,0.1,),        
+    Sphere( 0.1, -0.45, -0.1, 0.1, green,  0.3,0.1,),
+    Sphere( 0.3, -0.45, -0.2, 0.1, yellow, 0.3,0.1,),
+    Sphere( 0.5, -0.45, -0.3, 0.1, red,    0.3,0.1,),    
 
 ]
 lights = [Light(vec3(0.7, 1, -0.5), light_color)]
 
+def main():
+    # write final image
+    print("P3", output_width, output_height, 255)
+    screen_ratio = output_width / output_height
+    for y in range(output_height):
+        stderr.write("%i/%i\r"%(y,output_height))
+        y_ratio = y / float(output_height)
+        for x in range(output_width):
+            x_ratio = x / float(output_width)
+            p = cameraX * (2 * x_ratio - 1.0) * screen_ratio - \
+                cameraY * (2 * y_ratio - 1.0) + cameraZ * 1
+            d = (p - cameraO).normalized()
+            
+            r, g, b = vec2rgb(raytrace(world, lights, cameraO, d))
+            print(r, g, b)
+
 
 def raytrace(world, lights, origin, direction, raydepth=0):
-    if raydepth > 8:
+    if raydepth > 2:
         return bg_color
     current_color = bg_color
     current_dist = pos_infinity
@@ -61,18 +77,5 @@ def raytrace(world, lights, origin, direction, raydepth=0):
 
     return current_color
 
-
-# write final image
-print("P3", output_width, output_height, 255)
-screen_ratio = output_width / output_height
-for y in range(output_height):
-    stderr.write("%i/%i\r"%(y,output_height))
-    y_ratio = y / float(output_height)
-    for x in range(output_width):
-        x_ratio = x / float(output_width)
-        p = cameraX * (2 * x_ratio - 1.0) * screen_ratio - \
-            cameraY * (2 * y_ratio - 1.0) + cameraZ * 1
-        d = (p - cameraO).normalized()
-        
-        r, g, b = vec2rgb(raytrace(world, lights, cameraO, d))
-        print(r, g, b)
+if __name__ == "__main__":
+    main()

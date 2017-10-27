@@ -227,10 +227,11 @@ class Sphere():
             light_angle = sphere_normal.dot((light.pos-p).normalized())
             if light_angle>0:
                 if light.free_path(p,world):
+                    light_angle = light_angle
                     color = color + (color_mult(self.material(p),light.color)*light_angle)
 
 
-        refrected_direction = direction - sphere_normal*(direction.dot(sphere_normal)*(1.0+self.refraction))
+        refrected_direction = (direction - sphere_normal*(direction.dot(sphere_normal)*(1.0+self.refraction))).normalized()
         random_direction = (refrected_direction + random_vector()).normalized()
         
         new_direction = (random_direction*self.roughness + refrected_direction*(1-self.roughness)).normalized()
