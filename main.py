@@ -29,24 +29,24 @@ def main():
     cameraO = vec3(0, 0, -2)
     
     world  = [
-        Sphere(-0.3,  -0.3,  0.1,   0.2, black,0.5,0.0,),
-        Sphere( 0.3,  -0.3,  0.1,   0.2, white,0.5,0.3,),
+        Sphere(-0.3,  -0.3,  0.1,   0.2, vec3(0.0,0.0,0.0),0.5,0.0,),
+        Sphere( 0.3,  -0.3,  0.1,   0.2, vec3(1.0,1.0,1.0),0.5,0.3,),
         
-        CheckeredSphere( 0.0, -999.5, 0.0, 999, white,0.7,0.1),
+        CheckeredSphere( 0.0, -999.5, 0.0, 999, vec3(1.0,1.0,1.0),0.7,0.1),
         
         Sphere(-1.0, 0, 0.5, 0.5, vec3(0.5,0.2,1.0).normalized()),
         Sphere( 0.0, 0, 1.0, 0.5, vec3(0.2,1.0,0.5).normalized()),
         Sphere( 1.0, 0, 0.5, 0.5, vec3(1.0,0.5,0.2).normalized()),
     
-        Sphere(-0.5, -0.45, -0.3, 0.1, purple, 0.3,0.1,),
-        Sphere(-0.3, -0.45, -0.2, 0.1, blue,   0.3,0.1,),
-        Sphere(-0.1, -0.45, -0.1, 0.1, cyan,   0.3,0.1,),        
-        Sphere( 0.1, -0.45, -0.1, 0.1, green,  0.3,0.1,),
-        Sphere( 0.3, -0.45, -0.2, 0.1, yellow, 0.3,0.1,),
-        Sphere( 0.5, -0.45, -0.3, 0.1, red,    0.3,0.1,),    
+        Sphere(-0.5, -0.45, -0.3, 0.1, vec3(1,0,1).normalized(), 0.3,0.1,),
+        Sphere(-0.3, -0.45, -0.2, 0.1, vec3(0,0,1).normalized(), 0.3,0.1,),
+        Sphere(-0.1, -0.45, -0.1, 0.1, vec3(0,1,1).normalized(), 0.3,0.1,),        
+        Sphere( 0.1, -0.45, -0.1, 0.1, vec3(0,1,0).normalized(), 0.3,0.1,),
+        Sphere( 0.3, -0.45, -0.2, 0.1, vec3(1,1,0).normalized(), 0.3,0.1,),
+        Sphere( 0.5, -0.45, -0.3, 0.1, vec3(1,0,0).normalized(), 0.3,0.1,),    
     
     ]
-    lights = [Light(vec3(0.7, 1, -0.5), light_color)]
+    lights = [Light(vec3(0.7, 1, -0.5), vec3(2,2,1).normalized())]
     
     # write final image
     print("P3", output_width, output_height, 255)
@@ -66,9 +66,9 @@ def main():
 
 def raytrace(world, lights, origin, direction, raydepth=0):
     if raydepth > 2:
-        return bg_color
-    current_color = bg_color
-    current_dist = pos_infinity
+        return vec3(1,2,3).normalized()
+    current_color = vec3(1,2,3).normalized()
+    current_dist = float('+inf')
     for obj in world:
         test_color, test_dist = obj.trace(
             origin, direction, world, lights, raytrace, raydepth)
@@ -195,32 +195,11 @@ def random_vector():
                 -1.0+2*random())
 
 
-pos_infinity  = float('+inf')
-neg_infinity  = float('-inf')
-ambient_color = vec3(1,2,3).normalized()
-bg_color      = ambient_color
-light_color   = vec3(2,2,1).normalized()
-purple        = vec3(1,0,1)
-red           = vec3(1,0,0)
-yellow        = vec3(1,1,0)
-green         = vec3(0,1,0)
-cyan          = vec3(0,1,1)
-blue          = vec3(0,0,1)
-
-gray          = vec3(0.5,0.5,0.5)
-white         = vec3(1,1,1)
-black         = vec3(0,0,0)
-
 def color_mult(c1,c2):
     return vec3(c1.x*c2.x,
                 c1.y*c2.y,
                 c1.z*c2.z)
 
-class Ray():
-    def __init__(self, o, d):
-        self.o = o
-        self.d = d.normalized()
-      
 class Sphere():
     "x²+y²+z² = r²"
 
@@ -258,7 +237,7 @@ class Sphere():
 
         S = (b*b)-(4*a*c)
         if S<=error:
-            return pos_infinity
+            return float('+inf')
 
         sqrtS = S**0.5
         t1 = (-b-sqrtS)/(2.0*a)
@@ -270,20 +249,20 @@ class Sphere():
         elif t2<=0 and t1>0:
             return t1
         elif t1<=0 and t2<=0:
-            return pos_infinity
+            return float('+inf')
         else:
             return min(t1,t2)
 
     def trace(self,origin,direction,world,lights,raytrace,raydepth):
         t = self.intersection(origin,direction)
-        if t==pos_infinity:
-            return bg_color,pos_infinity
+        if t==float('+inf'):
+            return vec3(1,2,3).normalized(),float('+inf')
         elif t<=0:
-            return bg_color,pos_infinity
+            return vec3(1,2,3).normalized(),float('+inf')
 
 
         p = origin+direction*t
-        color = color_mult(self.material(p),ambient_color)
+        color = color_mult(self.material(p),vec3(1,2,3).normalized())
         sphere_normal = ((p - self.center)).normalized()
         
         for light in lights:
