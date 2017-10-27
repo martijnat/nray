@@ -20,34 +20,41 @@ from sys import stderr
 
 
 def main():
-    upscale = 0.020
-    output_width, output_height = int(1920*(upscale**0.5)), int(1080*(upscale**0.5))
-    
+    qualityg = 50
+    output_width, output_height = int(1920*(quality**0.5)), int(1080*(quality**0.5))
+
     cameraX = vec3(1, 0, 0)
     cameraY = vec3(0, 1, 0)
     cameraZ = vec3(0, 0, 1)
     cameraO = vec3(0, 0, -2)
-    
+
     world  = [
-        Sphere(-0.3,  -0.3,  0.1,   0.2, vec3(0.0,0.0,0.0),0.5,0.0,),
-        Sphere( 0.3,  -0.3,  0.1,   0.2, vec3(1.0,1.0,1.0),0.5,0.3,),
-        
-        CheckeredSphere( 0.0, -999.5, 0.0, 999, vec3(1.0,1.0,1.0),0.7,0.1),
-        
-        Sphere(-1.0, 0, 0.5, 0.5, vec3(0.5,0.2,1.0).normalized()),
-        Sphere( 0.0, 0, 1.0, 0.5, vec3(0.2,1.0,0.5).normalized()),
-        Sphere( 1.0, 0, 0.5, 0.5, vec3(1.0,0.5,0.2).normalized()),
-    
-        Sphere(-0.5, -0.45, -0.3, 0.1, vec3(1,0,1).normalized(), 0.3,0.1,),
-        Sphere(-0.3, -0.45, -0.2, 0.1, vec3(0,0,1).normalized(), 0.3,0.1,),
-        Sphere(-0.1, -0.45, -0.1, 0.1, vec3(0,1,1).normalized(), 0.3,0.1,),        
-        Sphere( 0.1, -0.45, -0.1, 0.1, vec3(0,1,0).normalized(), 0.3,0.1,),
-        Sphere( 0.3, -0.45, -0.2, 0.1, vec3(1,1,0).normalized(), 0.3,0.1,),
-        Sphere( 0.5, -0.45, -0.3, 0.1, vec3(1,0,0).normalized(), 0.3,0.1,),    
-    
+
+        CheckeredSphere( 0.0, -1000.2, 0.0, 1000, vec3(1.0,1.0,1.0)),
+
+        Sphere(-0.7, 0.1, -0.4, 0.3, vec3(0.5,0.0,1.0).normalized()),
+        Sphere( 0.0, 0.1, -0.3, 0.3, vec3(0.0,1.0,0.5).normalized()),
+        Sphere( 0.7, 0.1, -0.4, 0.3, vec3(1.0,0.5,0.0).normalized()),
+
+        Sphere(-0.3,  0.2,  -0.7,   0.2, vec3(0.0,0.5,1.0).normalized()),
+        Sphere( 0.3,  0.2,  -0.7,   0.2, vec3(0.5,1.0,0.0).normalized()),
+
+        Sphere(-0.5, -0.15, -0.9, 0.1, vec3(1,0,1).normalized()),
+        Sphere(-0.3, -0.15, -0.8, 0.1, vec3(0,0,1).normalized()),
+        Sphere(-0.1, -0.15, -0.7, 0.1, vec3(0,1,1).normalized()),
+        Sphere( 0.1, -0.15, -0.7, 0.1, vec3(0,1,0).normalized()),
+        Sphere( 0.3, -0.15, -0.8, 0.1, vec3(1,1,0).normalized()),
+        Sphere( 0.5, -0.15, -0.9, 0.1, vec3(1,0,0).normalized()),
+
+        Sphere(-0.5, -0.05, -1.0, 0.05, vec3(1.0,0.0,0.5).normalized()),
+        Sphere( 0.5, -0.05, -1.0, 0.05, vec3(1.0,0.0,0.5).normalized()),
+
+        Sphere(-0.3, -0.15, -1.2, 0.05, vec3(1.0,1.0,1.0),0.9,0.1,-1.0),
+        Sphere( 0.0, -0.16, -1.2, 0.04, vec3(1.0,1.0,1.0),0.9,0.1,-1.0),
+        Sphere( 0.3, -0.15, -1.2, 0.05, vec3(1.0,1.0,1.0),0.9,0.1,-1.0),
     ]
     lights = [Light(vec3(0.7, 1, -0.5), vec3(2,2,1).normalized())]
-    
+
     # write final image
     print("P3", output_width, output_height, 255)
     screen_ratio = output_width / output_height
@@ -59,7 +66,7 @@ def main():
             p = cameraX * (2 * x_ratio - 1.0) * screen_ratio - \
                 cameraY * (2 * y_ratio - 1.0) + cameraZ * 1
             d = (p - cameraO).normalized()
-            
+
             r, g, b = vec2rgb(raytrace(world, lights, cameraO, d))
             print(r, g, b)
 
@@ -115,11 +122,11 @@ class CustomRNG():
                   0x9B, 0x1E, 0x87, 0xE9, 0xCE, 0x55, 0x28, 0xDF,
                   0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68,
                   0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16]
-        
+
         # internal state, any numbers can be used
         self.w = 2
-        self.x = 3 
-        self.y = 5 
+        self.x = 3
+        self.y = 5
         self.z = 7
     def int8(self):
         "get random integer between 0 and 255"
@@ -130,7 +137,7 @@ class CustomRNG():
         r ^= self.y;
         r = self.S[r];
         r ^= self.z;
-        
+
         self.w, self.x,self.y,self.z = r , self.w, self.x, self.y
         return self.w
     def __call__(self):
@@ -139,7 +146,7 @@ class CustomRNG():
         r2 = self.int8()
         r3 = self.int8()
         r4 = self.int8()
-        r_int32 = (r1<<24)+(r2<<16)+(r3<<8)+(r4)        
+        r_int32 = (r1<<24)+(r2<<16)+(r3<<8)+(r4)
         return r_int32/(2**32)
 
 random = CustomRNG()
@@ -203,14 +210,14 @@ def color_mult(c1,c2):
 class Sphere():
     "x²+y²+z² = r²"
 
-    def __init__(self, x, y, z, r, color, reflectivity=0.3, roughness=0.0,refraction=1):
+    def __init__(self, x, y, z, r, color, reflectivity=0.5, roughness=0.1,refraction=1):
         self.x = x
         self.y = y
         self.z = z
         self.r = r
         self.center = vec3(x,y,z)
         self.color = color
-        self.reflectivity = reflectivity        
+        self.reflectivity = reflectivity
         self.roughness = roughness
         self.refraction = refraction
     def material(self, p):
@@ -220,6 +227,7 @@ class Sphere():
         # p = o +d·t
         # px² +py² + pz²- r² = 0
         o = origin-self.center
+
         d = direction
         # t²*d.dot(d) + t * 2* o.dot(d) + o.dot(O) - r² = 0
 
@@ -255,6 +263,9 @@ class Sphere():
 
     def trace(self,origin,direction,world,lights,raytrace,raydepth):
         t = self.intersection(origin,direction)
+        if abs(origin-self.center)<=(self.r+error):
+            return vec3(1,2,3).normalized(),float('+inf')
+
         if t==float('+inf'):
             return vec3(1,2,3).normalized(),float('+inf')
         elif t<=0:
@@ -264,7 +275,7 @@ class Sphere():
         p = origin+direction*t
         color = color_mult(self.material(p),vec3(1,2,3).normalized())
         sphere_normal = ((p - self.center)).normalized()
-        
+
         for light in lights:
             light_angle = sphere_normal.dot((light.pos-p).normalized())
             if light_angle>0:
@@ -273,18 +284,18 @@ class Sphere():
                     color = color + (color_mult(self.material(p),light.color)*light_angle)
 
 
-        refrected_direction = (direction - sphere_normal*(direction.dot(sphere_normal)*(1.0+self.refraction))).normalized()
-        random_direction = (refrected_direction + random_vector()).normalized()
-        
-        new_direction = (random_direction*self.roughness + refrected_direction*(1-self.roughness)).normalized()
-        
+        reflected_direction = (direction - sphere_normal*(direction.dot(sphere_normal)*(2.0))).normalized()
+        reflected_direction = reflected_direction * self.refraction
+
+        new_direction = (random_vector()*self.roughness + reflected_direction*(1-self.roughness)).normalized()
+
         color = (color*(1-self.reflectivity)
                  + raytrace(world,
                             lights,
                             origin+direction*(t-error),
                             new_direction,
                             raydepth+1)*self.reflectivity)
-       
+
         return color,t
 
 class CheckeredSphere(Sphere):
@@ -298,7 +309,7 @@ class CheckeredSphere(Sphere):
             return self.color
         else:
             return vec3(1,1,1)-self.color
-    
+
 class Light():
     def __init__(self, pos, color):
         self.pos = pos
@@ -307,7 +318,7 @@ class Light():
         mt = (self.pos-pos).dot(self.pos-pos)
         d = (pos-self.pos).normalized()
         o = self.pos
-        
+
         for thing in world:
             t = thing.intersection(o,d)
             if t*t<mt-error and t*t>error:
@@ -319,7 +330,7 @@ def srgb(l):
     if l<=0.00313066844250063:
         return min(255,max(0,int(l*12.92*256)))
     return min(255,max(0,int(256*1.055*(l**(1/2.4))-0.055)))
-    
+
 def vec2rgb(c):
     r = srgb(c.x)
     g = srgb(c.y)
@@ -331,4 +342,4 @@ def vec2rgb(c):
 if __name__ == "__main__":
     main()
 
-    
+
